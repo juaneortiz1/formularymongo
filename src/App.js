@@ -1,23 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import StudentForm from './components/StudentForm';
+import StudentTable from './components/StudentTable';
 
 function App() {
+  const [students, setStudents] = useState([]);
+
+  const fetchStudents = async () => {
+    const response = await fetch('http://localhost:8080/api/estudiantes');
+    const data = await response.json();
+    setStudents(data);
+  };
+
+  const addStudent = async (student) => {
+    await fetch('http://localhost:8080/api/estudiantes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(student),
+    });
+    fetchStudents();
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Gestión de Estudiantes</h1>
+      <StudentForm onSubmit={addStudent} />
+      <StudentTable students={students} />
     </div>
   );
 }
