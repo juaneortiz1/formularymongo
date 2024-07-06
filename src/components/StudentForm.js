@@ -2,56 +2,68 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+
 const StudentForm = ({ onSubmit }) => {
-  const [nombre, setNombre] = useState('');
-  const [correo, setCorreo] = useState('');
-  const [fechaNacimiento, setFechaNacimiento] = useState(new Date());
-  const [programa, setPrograma] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [program, setProgram] = useState('');
+  const [birthDate, setBirthDate] = useState(null);
+
+  const calculateAge = (date) => {
+    const today = new Date();
+    const birthDate = new Date(date);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const age = calculateAge(birthDate);
     const student = {
-      nombre,
-      correo,
-      fechaNacimiento,
-      programa
+      nombre: name,
+      correo: email,
+      programa: program,
+      fechaNacimiento: birthDate,
+      edad: age,
     };
     onSubmit(student);
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Nombre"
-        value={nombre}
-        onChange={(e) => setNombre(e.target.value)}
-      />
-      <br />
-      <input
-        type="email"
-        placeholder="Correo"
-        value={correo}
-        onChange={(e) => setCorreo(e.target.value)}
-      />
-      <br />
-      <DatePicker
-        selected={fechaNacimiento}
-        onChange={(date) => setFechaNacimiento(date)}
-        dateFormat="yyyy-MM-dd"
-        placeholderText="Fecha de Nacimiento"
-      />
-      <br />
-      <input
-        type="text"
-        placeholder="Programa"
-        value={programa}
-        onChange={(e) => setPrograma(e.target.value)}
-      />
-      <br />
+      <div>
+        <label>Nombre:</label>
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+      </div>
+      <div>
+        <label>Correo:</label>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      </div>
+      <div>
+        <label>Programa:</label>
+        <input type="text" value={program} onChange={(e) => setProgram(e.target.value)} required />
+      </div>
+      <div>
+        <label>Fecha de Nacimiento:</label>
+        <DatePicker
+          selected={birthDate}
+          onChange={(date) => setBirthDate(date)}
+          dateFormat="yyyy-MM-dd"
+          showYearDropdown
+          scrollableYearDropdown
+        />
+      </div>
       <button type="submit">Agregar Estudiante</button>
     </form>
   );
 };
 
 export default StudentForm;
+
+
+
+
